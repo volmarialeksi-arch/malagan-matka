@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="fi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Arvostelut</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f5f5f5;
+      color: #333;
+      overflow-x: hidden;
+    }
+
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .home-btn {
+      text-decoration: none;
+      color: white;
+      font-weight: bold;
+      font-size: 1.2rem;
+      padding: 8px 16px;
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.6);
+      transition: background 0.2s;
+    }
+
+    .home-btn:hover {
+      background: rgba(0, 0, 0, 0.8);
+    }
+
+    .review-container {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 40px 50px;
+      border-radius: 20px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+      width: 90%;
+      max-width: 600px;
+      margin: 100px auto 40px auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    h2 {
+      margin: 0;
+      text-align: center;
+      font-size: 2rem;
+      color: #222;
+    }
+
+    label {
+      font-weight: bold;
+      margin-bottom: 5px;
+      display: block;
+    }
+
+    input[type="text"],
+    textarea,
+    input[type="file"] {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+      transition: border 0.2s;
+    }
+
+    input[type="text"]:focus,
+    textarea:focus {
+      border: 1px solid #ff0000;
+      outline: none;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    /* Tähdet */
+    .stars {
+      display: flex;
+      gap: 5px;
+      font-size: 2rem;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .stars span {
+      color: #ccc;
+      transition: transform 0.2s, color 0.2s;
+    }
+
+    .stars span.hover,
+    .stars span.selected {
+      color: gold;
+      transform: scale(1.3);
+    }
+
+    .submit-btn {
+      padding: 12px;
+      border: none;
+      border-radius: 25px;
+      background: linear-gradient(135deg, #ff0000, #cc0000);
+      color: white;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+    }
+
+    .submit-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.4);
+      background: linear-gradient(135deg, #ff3b3b, #990000);
+    }
+
+    .error {
+      color: red;
+      font-size: 0.9rem;
+    }
+
+    /* Viestit */
+    .reviews {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .review {
+      background: #f9f9f9;
+      border-radius: 12px;
+      padding: 15px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    .review .name {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .review .date {
+      font-size: 0.8rem;
+      color: #666;
+      margin-bottom: 5px;
+    }
+
+    .review .comment {
+      margin: 0;
+    }
+
+    .review .rating {
+      color: gold;
+      font-size: 1.2rem;
+    }
+
+    /* Kuville koko leveys/korkeus */
+    .review img {
+      width: 100%;
+      height: auto;
+      display: block;
+      margin-top: 10px;
+      border-radius: 12px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <a href="etusivu.html" class="home-btn">Etusivu</a>
+  </header>
+
+  <div class="review-container">
+    <h2>Jätä arvostelu</h2>
+    <form id="reviewForm">
+      <label for="name">Nimi*</label>
+      <input type="text" id="name" placeholder="Kirjoita nimesi" required>
+
+      <label>Kommentti</label>
+      <textarea id="comment" placeholder="Kirjoita kommenttisi"></textarea>
+
+      <label>Tähdet</label>
+      <div class="stars" id="stars">
+        <span data-value="1">&#9733;</span>
+        <span data-value="2">&#9733;</span>
+        <span data-value="3">&#9733;</span>
+        <span data-value="4">&#9733;</span>
+        <span data-value="5">&#9733;</span>
+      </div>
+
+     
+
+      <div class="error" id="error"></div>
+      <button type="submit" class="submit-btn">Lähetä</button>
+    </form>
+
+    <div class="reviews" id="reviews"></div>
+  </div>
+
+  <script>
+    const stars = document.querySelectorAll('#stars span');
+    let selectedRating = 0;
+
+    stars.forEach(star => {
+      star.addEventListener('click', () => {
+        selectedRating = parseInt(star.dataset.value);
+        updateStars(selectedRating);
+      });
+      star.addEventListener('mouseover', () => {
+        updateStars(parseInt(star.dataset.value));
+      });
+      star.addEventListener('mouseout', () => {
+        updateStars(selectedRating);
+      });
+    });
+
+    function updateStars(rating) {
+      stars.forEach(star => {
+        if (parseInt(star.dataset.value) <= rating) {
+          star.classList.add('selected');
+        } else {
+          star.classList.remove('selected');
+        }
+      });
+    }
+
+    const form = document.getElementById('reviewForm');
+    const errorDiv = document.getElementById('error');
+    const reviewsDiv = document.getElementById('reviews');
+    const imageInput = document.getElementById('imageInput');
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('name').value.trim();
+      const comment = document.getElementById('comment').value.trim();
+
+      if (!name) {
+        errorDiv.textContent = "Kirjoita nimesi ennen kommentin lähettämistä!";
+        return;
+      }
+
+      errorDiv.textContent = "";
+
+      const reviewDiv = document.createElement('div');
+      reviewDiv.classList.add('review');
+
+      const date = new Date();
+      const dateString = date.toLocaleString('fi-FI');
+
+      let starsHtml = '';
+      for (let i = 0; i < 5; i++) {
+        starsHtml += i < selectedRating ? '&#9733;' : '&#9734;';
+      }
+
+    
+      let imageHtml = '';
+      if (imageInput.files && imageInput.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          imageHtml = `<img src="${e.target.result}" alt="Arvostelukuva">`;
+          reviewDiv.innerHTML = `
+            <div class="name">${name}</div>
+            <div class="date">${dateString}</div>
+            <div class="rating">${starsHtml}</div>
+            <p class="comment">${comment}</p>
+            ${imageHtml}
+          `;
+        };
+        reader.readAsDataURL(imageInput.files[0]);
+      } else {
+        reviewDiv.innerHTML = `
+          <div class="name">${name}</div>
+          <div class="date">${dateString}</div>
+          <div class="rating">${starsHtml}</div>
+          <p class="comment">${comment}</p>
+        `;
+      }
+
+      reviewsDiv.prepend(reviewDiv);
+
+      form.reset();
+      selectedRating = 0;
+      updateStars(selectedRating);
+    });
+  </script>
+
+</body>
+</html>

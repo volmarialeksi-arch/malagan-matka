@@ -1,0 +1,512 @@
+<!DOCTYPE html> 
+
+<html lang="fi"> 
+
+<head> 
+
+  <meta charset="UTF-8"> 
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+
+  <title>matkalla malagaan</title> 
+
+  <style> 
+
+    body { 
+
+      margin: 0; 
+
+      font-family: Arial, sans-serif; 
+
+      background: #f9f9f9; 
+
+      color: #333; 
+
+    } 
+
+ 
+
+    /* Header & burger */ 
+
+    header { 
+
+      position: fixed; 
+
+      top: 0; 
+
+      left: 0; 
+
+      right: 0; 
+
+      padding: 15px 20px; 
+
+      background: rgba(255, 255, 255, 0.9); 
+
+      display: flex; 
+
+      justify-content: flex-end; 
+
+      align-items: center; 
+
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+
+      z-index: 1000; 
+
+    } 
+
+ 
+
+    .burger { 
+
+      cursor: pointer; 
+
+      width: 30px; 
+
+      height: 22px; 
+
+      display: flex; 
+
+      flex-direction: column; 
+
+      justify-content: space-between; 
+
+    } 
+
+ 
+
+    .burger div { 
+
+      height: 4px; 
+
+      background: #333; 
+
+      border-radius: 2px; 
+
+    } 
+
+ 
+
+    nav { 
+
+      position: absolute; 
+
+      top: 60px; 
+
+      right: 20px; 
+
+      background: #fff; 
+
+      border: 1px solid #ddd; 
+
+      border-radius: 8px; 
+
+      display: none; 
+
+      flex-direction: column; 
+
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15); 
+
+      z-index: 2000; 
+
+    } 
+
+ 
+
+    nav a { 
+
+      padding: 10px 20px; 
+
+      text-decoration: none; 
+
+      color: #333; 
+
+      font-weight: bold; 
+
+      transition: background 0.2s; 
+
+    } 
+
+ 
+
+    nav a:hover { 
+
+      background: #f0f0f0; 
+
+    } 
+
+ 
+
+    .red-line { 
+
+      margin-top: 60px; 
+
+      width: 100%; 
+
+      height: 4px; 
+
+      background: red; 
+
+    } 
+
+ 
+
+    /* Hero */ 
+
+    .hero { 
+
+      position: relative; 
+
+      width: 100%; 
+
+      height: 100vh; 
+
+      overflow: hidden; 
+
+    } 
+
+ 
+
+    .hero img { 
+
+      width: 100%; 
+
+      height: 100%; 
+
+      object-fit: cover; 
+
+    } 
+
+ 
+
+    .overlay { 
+
+      position: absolute; 
+
+      inset: 0; 
+
+      background: rgba(0,0,0,0.4); 
+
+      display: flex; 
+
+      flex-direction: column; 
+
+      justify-content: center; 
+
+      align-items: center; 
+
+      color: white; 
+
+      text-align: center; 
+
+      z-index: 1; 
+
+    } 
+
+ 
+
+    .overlay h1 { 
+
+      font-size: 3rem; 
+
+      margin-bottom: 10px; 
+
+    } 
+
+ 
+
+    .overlay p { 
+
+      font-size: 1.5rem; 
+
+      margin-bottom: 40px; 
+
+    } 
+
+ 
+
+    /* Boxes overlay */ 
+
+    .boxes { 
+
+      display: grid; 
+
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); 
+
+      gap: 25px; 
+
+      width: 90%; 
+
+      margin: 0 auto; 
+
+    } 
+
+ 
+
+    .box { 
+
+      background: rgba(255, 255, 255, 0.95); 
+
+      border-radius: 14px; 
+
+      overflow: hidden; 
+
+      box-shadow: 0 6px 12px rgba(0,0,0,0.25); 
+
+      display: flex; 
+
+      flex-direction: row; 
+
+      justify-content: space-between; 
+
+      position: relative; 
+
+      min-height: 250px; 
+
+      cursor: pointer; 
+
+      transition: transform 0.2s, box-shadow 0.2s; 
+
+      text-decoration: none; 
+
+      color: inherit; 
+
+    } 
+
+ 
+
+    .box:hover { 
+
+      transform: translateY(-6px); 
+
+      box-shadow: 0 10px 20px rgba(0,0,0,0.35); 
+
+    } 
+
+ 
+
+    .box-content { 
+
+      display: flex; 
+
+      align-items: center; 
+
+      gap: 25px; 
+
+      width: 100%; 
+
+      padding: 20px; 
+
+    } 
+
+ 
+
+    .box img { 
+
+      height: 220px; 
+
+      width: 220px; 
+
+      object-fit: cover; 
+
+      border-radius: 10px; 
+
+      flex-shrink: 0; 
+
+    } 
+
+ 
+
+    .box h3 { 
+
+      margin: 0; 
+
+      font-size: 2rem; 
+
+      color: #222; 
+
+    } 
+
+ 
+
+    /* Hinta-nappi */ 
+
+    .price-btn { 
+
+      position: absolute; 
+
+      bottom: 20px; 
+
+      right: 20px; 
+
+      padding: 12px 28px; 
+
+      background: linear-gradient(135deg, #ff0000, #cc0000); 
+
+      color: white; 
+
+      border-radius: 35px; 
+
+      text-decoration: none; 
+
+      font-size: 1.1rem; 
+
+      font-weight: bold; 
+
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3); 
+
+      transition: transform 0.2s, box-shadow 0.2s; 
+
+      pointer-events: none; 
+
+    } 
+
+ 
+
+    .box:hover .price-btn { 
+
+      transform: scale(1.1); 
+
+      box-shadow: 0 8px 16px rgba(0,0,0,0.4); 
+
+      background: linear-gradient(135deg, #ff3b3b, #990000); 
+
+    } 
+
+  </style> 
+
+</head> 
+
+<body> 
+
+  <header> 
+
+    <div class="burger" onclick="toggleMenu(event)"> 
+
+      <div></div> 
+
+      <div></div> 
+
+      <div></div> 
+
+    </div> 
+
+    <nav id="menu"> 
+
+      <a href="#">Etusivu</a> 
+
+      <a href="arvostelu.html">Arvostelut</a> 
+
+    </nav> 
+
+  </header> 
+
+ 
+
+  <div class="red-line"></div> 
+
+ 
+
+  <section class="hero"> 
+
+    <!-- Hero image --> 
+
+    <img src="beverly-hills-hotel-2455977.jpg" alt="Hero kuva"> 
+
+ 
+
+    <div class="overlay"> 
+
+      <h1>Tervetuloa matkalle</h1> 
+
+      <p>Koe unohtumaton junamatka!</p> 
+
+ 
+
+      <div class="boxes"> 
+
+        <a href="JUNA.html" class="box"> 
+
+          <div class="box-content"> 
+
+            <img src="train-2264033.jpg" alt="Juna"> 
+
+            <h3>Juna</h3> 
+
+          </div> 
+
+          <div class="price-btn">69€</div> 
+
+        </a> 
+
+        <a href="lennot.html" class="box"> 
+
+          <div class="box-content"> 
+
+            <img src="airplane-7834342.jpg" alt="Juna"> 
+
+            <h3>lennot</h3> 
+
+          </div> 
+
+          <div class="price-btn">402€</div> 
+
+        </a> 
+
+        <a href="hotellit.html" class="box"> 
+
+          <div class="box-content"> 
+
+            <img src="pool-191972.jpg" alt="Juna"> 
+
+            <h3>hotelli</h3> 
+
+          </div> 
+
+          <div class="price-btn">444€</div> 
+
+        </a> 
+
+
+      </div> 
+
+    </div> 
+
+  </section> 
+
+ 
+
+  <script> 
+
+    const menu = document.getElementById("menu"); 
+
+    const burger = document.querySelector(".burger"); 
+
+ 
+
+    function toggleMenu(event) { 
+
+      event.stopPropagation(); 
+
+      menu.style.display = menu.style.display === "flex" ? "none" : "flex"; 
+
+    } 
+
+ 
+
+    // Klikkaa muualla -> sulkee menun 
+
+    document.addEventListener("click", function(e) { 
+
+      if (menu.style.display === "flex" && !menu.contains(e.target) && !burger.contains(e.target)) { 
+
+        menu.style.display = "none"; 
+
+      } 
+
+    }); 
+
+  </script> 
+
+</body> 
+
+</html> 
